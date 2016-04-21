@@ -26,19 +26,19 @@ app.get('/', function(req, res) {
 
 app.post('/links', function(req,res){
   var newLink = req.body.q;
-  
-  console.log(newLink);
-  
-  var hash = hashids.encode('newLink');
-  console.log("hash is:" + hash);
+   
 
-  db.link.create({url: newLink, hash: hash }).then(function(){
+  db.link.create({url: newLink}).then(function(data){
+    var hash = hashids.encode(data.id);
+    console.log("hash is:" + hash);
+    data.updateAttributes({hash: hash})
    res.send("success");
-
+   // res.redirect('/links/' + data.id);
  })
  });
 
- 
+
+
 
 app.get('/links/:id', function(req,res){
   //displays short url
