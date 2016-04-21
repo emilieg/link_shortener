@@ -4,7 +4,7 @@ var app = express();
 var ejsLayouts = require('express-ejs-layouts');
 var db = require("./models");
 // var request = require('request');
-// var Hashids = require('hashids')
+var Hashids = require('hashids')
 var bodyParser = require('body-parser')
 
 app.set('view engine', 'ejs');
@@ -14,14 +14,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-db.link.create({url: 'www.google.com.test1', hash: 'this is a test hash'}).then(function(data){
 
-});
 
 
 app.get('/', function(req, res) {
 //   // you can now access the newly created task via the variable data
-//   res.render('index');
+  res.render('index');
 
 });
 
@@ -29,10 +27,23 @@ app.get('/', function(req, res) {
 
 
 app.post('/links', function(req,res){
-  
+  var newLink = req.body.url;
+  var hash = req.body.hash;
+  console.log(hash);
+  console.log(newLink);
+  hashids = new Hashids("this is my salt");
+  var id = hashids.encode(hash);
+  console.log(id);
+
+  db.link.create({url: newLink, hash: id }).then(function(){
+   res.send("success") 
+ })
  });
 
  
+
+
+
 
 
 
