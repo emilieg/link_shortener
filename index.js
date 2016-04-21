@@ -4,16 +4,15 @@ var app = express();
 var ejsLayouts = require('express-ejs-layouts');
 var db = require("./models");
 // var request = require('request');
-var Hashids = require('hashids')
-var bodyParser = require('body-parser')
+var Hashids = require('hashids');
+hashids = new Hashids("this is my salt");
+var bodyParser = require('body-parser');
 
 app.set('view engine', 'ejs');
 app.use(ejsLayouts);
 app.use(express.static(__dirname + '/static'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-
 
 
 
@@ -25,27 +24,21 @@ app.get('/', function(req, res) {
 
 
 
-
 app.post('/links', function(req,res){
-  var newLink = req.body.url;
-  var hash = req.body.hash;
-  console.log(hash);
+  var newLink = req.body.q;
+  
   console.log(newLink);
-  hashids = new Hashids("this is my salt");
-  var id = hashids.encode(hash);
-  console.log(id);
+  
+  var hash = hashids.encode('newLink');
+  console.log("hash is:" + hash);
 
-  db.link.create({url: newLink, hash: id }).then(function(){
-   res.send("success") 
+  db.link.create({url: newLink, hash: hash }).then(function(){
+   res.send("success");
+
  })
  });
 
  
-
-
-
-
-
 
 app.get('/links/:id', function(req,res){
   //displays short url
