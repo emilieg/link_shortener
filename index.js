@@ -5,7 +5,7 @@ var ejsLayouts = require('express-ejs-layouts');
 var db = require("./models");
 // var request = require('request');
 var Hashids = require('hashids');
-hashids = new Hashids("this is my salt");
+hashids = new Hashids("this is my salt", 6);
 var bodyParser = require('body-parser');
 
 app.set('view engine', 'ejs');
@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 app.get('/', function(req, res) {
 //   // you can now access the newly created task via the variable data
-  res.render('index');
+res.render('index');
 
 });
 
@@ -26,41 +26,35 @@ app.get('/', function(req, res) {
 
 app.post('/links', function(req,res){
   var newLink = req.body.q;
-   
 
   db.link.create({url: newLink}).then(function(data){
     var hash = hashids.encode(data.id);
     console.log("hash is:" + hash);
     data.updateAttributes({hash: hash})
-   res.send("success");
-   // res.redirect('/links/' + data.id);
- })
- });
+    res.redirect('links/' + data.id);
+  })
+});
 
 
 
 
 app.get('/links/:id', function(req,res){
+  db.link.findById(req.params.id).then(function(data) {
+    console.log(data);
+    var hash = data.hash
+    res.render('links', {hash: hash});
+  })
   //displays short url
 });
 
 
 
 app.get('/:hash', function(req,res){
+  db.link.find({where: {hash: req.params.hash}}).then(function(data){
+    res.redirect(data.url);
+  })
   //takes has & redirects the user to the long url
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
